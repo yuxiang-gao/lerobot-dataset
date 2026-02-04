@@ -8,7 +8,7 @@ packages = ["src/ledataset"]
 [project]
 name = "lerobot-dataset"
 version = "0.4.4"
-description = "Add your description here"
+description = "A standalone version of [LerobotDataset](https://github.com/huggingface/lerobot/tree/main/src/lerobot/datasets) with relaxed dependencies for easier integration with other projects."
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
@@ -48,4 +48,8 @@ dev = [
     "graphviz>=0.21",
     "scikit-learn",
     "ipywidgets>=8.1.8",
+]
+
+viz = [
+    "rerun-sdk>=0.24.0,<0.27.0",
 ]
