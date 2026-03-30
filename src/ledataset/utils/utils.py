@@ -24,14 +24,11 @@ from copy import copy, deepcopy
 from datetime import datetime
 from pathlib import Path
 from statistics import mean
-from typing import Any
 
 import numpy as np
 import torch
-
+from accelerate import Accelerator
 from datasets.utils.logging import disable_progress_bar, enable_progress_bar
-
-
 
 
 def inside_slurm():
@@ -52,7 +49,9 @@ def auto_select_torch_device() -> torch.device:
         logging.info("Intel XPU backend detected, using xpu.")
         return torch.device("xpu")
     else:
-        logging.warning("No accelerated backend detected. Using default cpu, this will be slow.")
+        logging.warning(
+            "No accelerated backend detected. Using default cpu, this will be slow."
+        )
         return torch.device("cpu")
 
 
@@ -95,7 +94,9 @@ def get_safe_dtype(dtype: torch.dtype, device: str | torch.device):
             # The `has_fp64` flag is returned by `torch.xpu.get_device_capability()`
             # when available; if False, we fall back to float32 for compatibility.
             if not device_capability.get("has_fp64", False):
-                logging.warning(f"Device {device} does not support float64, using float32 instead.")
+                logging.warning(
+                    f"Device {device} does not support float64, using float32 instead."
+                )
                 return torch.float32
         else:
             logging.warning(
@@ -118,7 +119,9 @@ def is_torch_device_available(try_device: str) -> bool:
     elif try_device == "cpu":
         return True
     else:
-        raise ValueError(f"Unknown device {try_device}. Supported devices are: cuda, mps, xpu or cpu.")
+        raise ValueError(
+            f"Unknown device {try_device}. Supported devices are: cuda, mps, xpu or cpu."
+        )
 
 
 def is_amp_available(device: str):
@@ -135,7 +138,7 @@ def init_logging(
     display_pid: bool = False,
     console_level: str = "INFO",
     file_level: str = "DEBUG",
-    accelerator: Any= None,
+    accelerator: Accelerator | None = None,
 ):
     """Initialize logging configuration for LeRobot.
 
@@ -223,7 +226,9 @@ def say(text: str, blocking: bool = False):
     if blocking:
         subprocess.run(cmd, check=True)
     else:
-        subprocess.Popen(cmd, creationflags=subprocess.CREATE_NO_WINDOW if system == "Windows" else 0)
+        subprocess.Popen(
+            cmd, creationflags=subprocess.CREATE_NO_WINDOW if system == "Windows" else 0
+        )
 
 
 def log_say(text: str, play_sounds: bool = True, blocking: bool = False):
@@ -269,7 +274,10 @@ def enter_pressed() -> bool:
             return key in (b"\r", b"\n")  # enter key
         return False
     else:
-        return select.select([sys.stdin], [], [], 0)[0] and sys.stdin.readline().strip() == ""
+        return (
+            select.select([sys.stdin], [], [], 0)[0]
+            and sys.stdin.readline().strip() == ""
+        )
 
 
 def move_cursor_up(lines):
